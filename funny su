@@ -1,0 +1,119 @@
+local HardBan = {-- Esse ban é extremamente forte e só deve ser usado em casos extremos, pois bane TODOS os amigos do player e grupos também
+	3855407114,--trollando
+	3335728019,-- trollando
+	1800261977, -- trollando
+	2929506650, -- exploit puxando 
+	970005679, --crianca infiltrada
+	3609094981,
+	3021540567,
+	3872944018,
+	2500254940,
+	3715134739,-- doente crashando o servidor --
+	3715134739,-- Unrank all, ban all, nunca desbanir.
+	4143059567,-- sPAMMANDO comando de bot 9999999999
+	3209002570,--Dando CEO pra muita gente.
+	4138689019, --Dando CEO pra muita gente.
+	3380344108,-- Mutando todos do jogo e tirando patente
+}
+
+local BanirAmigos = {
+	3021540567,
+	3872944018,
+	2500254940,
+	3715134739,-- Unrank all, ban all, nunca desbanir.
+	3380344108,-- Mutando todos do jogo e tirando patente.
+	
+}
+
+
+local RemoverBan = {}
+local BanAoVivo = 2500254940
+
+
+local BanData = game:GetService("DataStoreService"):GetDataStore("Bans")
+
+game.ReplicatedStorage.BanData.OnServerEvent:Connect(function(player)
+	if game["Run Service"]:IsStudio() then
+		local success,errormessage = pcall(function()
+			BanData:SetAsync(BanAoVivo,false)
+		end)
+	end
+end)
+
+game.Players.PlayerAdded:Connect(function(Player)
+	local userid = Player.UserId
+	
+	if table.find(HardBan,Player.UserId) and not table.find(RemoverBan,userid) then
+		BanData:GetAsync(userid,false)
+		Player:Kick("Você foi banido a mão por um Developer. Contate um DEV no discord.")
+	end
+	
+	local Sucess,BanData,errormessage = pcall(function()
+		return BanData:GetAsync(userid,false)
+	end)
+	
+	if BanData and not table.find(RemoverBan,userid) then
+		Player:Kick("Você foi banido pois o sistema detectou que seja um possivel infiltrado, exploiter ou banido direto pelo studio")
+	elseif BanData and table.find(RemoverBan,userid) then
+		BanData:RemoveAsync(userid)
+	end
+	
+	for i,v in pairs(BanirAmigos) do
+		if Player:IsFriendsWith(v) then
+			Player:Kick("Você está na blacklist, contate um DEV no Discord.")
+		end
+	end
+	
+end)
+
+
+
+
+
+local manualban = {
+	2759932481, -- Abusando de rank , Removendo rank de DEV e ameaçando de ban.
+	3175947022, -- Dando ;crash all e free admin 
+	1236813674, -- Usando ;ban all
+	2379851602, -- Ganhando admin free de amigo e usando comando em all (rankeado por abralincom)
+	1922682620, -- Usou ;ban all e ;kick all
+	3852089273,-- abusando de comandos
+	1850209252,-- famoso doador de rank?
+	1848195527,--cumplice do doador
+	4289202788,-- roubo de contas ameaçando voltar pra bagunçar
+	4310257844,--trollando
+	1556962605,
+	1795253070,
+}
+
+local RemoverBan = {708858638}
+
+
+local bandatastore = game:GetService("DataStoreService"):GetDataStore("Bans")
+--[[
+game.ReplicatedStorage.BanData.OnServerEvent:Connect(function(player)
+	local success,errormessage = pcall(function()
+		bandatastore:SetAsync(player.UserId,true)
+	end)
+end)
+]]--
+game.Players.PlayerAdded:Connect(function(player)
+	local userid = player.UserId
+
+	if table.find(manualban,player.UserId) then
+		player:Kick("Você foi banido a mão por um Developer. Contate um DEV no discord.")
+	end
+
+--[[
+	local banned
+	local success,errormessage = pcall(function()
+		banned = bandatastore:GetAsync(userid,false)
+	end)
+
+	if banned and table.find(RemoverBan,userid) then
+		banned = bandatastore:RemoveAsync(userid)
+	elseif banned and not table.find(RemoverBan,userid) then
+		player:Kick("Você foi expulso pelo anti-cheat.")
+	end
+	--]]	
+
+end)
